@@ -1,0 +1,4 @@
+<servlet-mapping>
+    <servlet-name>com.duoxik.java.links.RestApplication</servlet-name>
+    <utl-pattern>/*</utl-pattern>
+</servlet-mapping>
