@@ -1,16 +1,17 @@
 package com.duoxik.java.links.resources;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoWriteException;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Iterator;
+
 import java.util.Random;
 
 @Path("links")
@@ -19,12 +20,12 @@ public class LinkResource {
     private static final String URL_KEY = "url";
     private static final String ID_KEY = "id";
     private static final Response ANSWER_404 = Response.status(Response.Status.NOT_FOUND).build();
-    private static final MongoCollection<Document> LINKS_COLLECTION;
+    private final static Table LINKS_TABLE;
 
     static {
-        MongoClient mongoClient = new MongoClient("localhost", 27017);
-        MongoDatabase db = mongoClient.getDatabase("JavaTestDB");
-        LINKS_COLLECTION = db.getCollection("links");
+        final AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
+        final DynamoDB dynamoDB = new DynamoDB(client);
+        LINKS_TABLE = dynamoDB.getTable("Links");
     }
 
     @GET
@@ -35,14 +36,8 @@ public class LinkResource {
             return ANSWER_404;
         }
 
-        final FindIterable<Document> resultsIterable = LINKS_COLLECTION.find(new Document(ID_KEY, id));
-        Iterator<Document> resultIterator = resultsIterable.iterator();
-
-        if(!resultIterator.hasNext()) {
-            return ANSWER_404;
-        }
-
-        final String url = resultIterator.next().getString(URL_KEY);
+        final Item item = LINKS_TABLE.getItem(ID_KEY, id);
+        final String url = item.getString(URL_KEY);
 
         if (url == null || url.isEmpty()) {
             return ANSWER_404;
@@ -64,13 +59,17 @@ public class LinkResource {
         while (attemp < 5) {
 
             final String id = getRandomId();
-            final Document newDoc = new Document(ID_KEY, id);
-            newDoc.put(URL_KEY, url);
-
+            final Item item = new Item()
+                    .withPrimaryKey(ID_KEY, id)
+                    .withString(URL_KEY, url);
             try {
-                LINKS_COLLECTION.insertOne(newDoc);
+
+                LINKS_TABLE.putItem(
+                        new PutItemSpec()
+                            .withConditionExpression("attribute_not_exists(id)")
+                            .withItem(item));
                 return Response.ok(id).build();
-            } catch (final MongoWriteException e) {
+            } catch (ConditionalCheckFailedException e) {
                 // attemp to write failed. ID - exists
                 // try again
             }
