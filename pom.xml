@@ -22,9 +22,9 @@
         <dependencies>
 
             <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongo-java-driver</artifactId>
-                <version>3.9.1</version>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk</artifactId>
+                <version>1.11.487</version>
             </dependency>
 
             <dependency>
