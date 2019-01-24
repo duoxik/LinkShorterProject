@@ -3,7 +3,7 @@
 
         <modelVersion>4.0.0</modelVersion>
         <groupId>com.duoxik.java.aws.lambda.links.adder</groupId>
-        <artifactId>adder</artifactId>
+        <artifactId>linkAdderAndGetter</artifactId>
         <version>1.0</version>
 
         <dependencies>
