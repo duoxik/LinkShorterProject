@@ -1,4 +1,4 @@
-package com.duoxik.java.aws.lambda.links.adder;
+package com.duoxik.java.aws.lambda.links;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -11,7 +11,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 
 import java.util.Random;
 
-public class LinkAdderHandler {
+public class Adder {
 
     private static final String URL_KEY = "url";
     private static final String ID_KEY = "id";
