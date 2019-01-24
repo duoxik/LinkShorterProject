@@ -1,4 +1,4 @@
-package com.duoxik.java.aws.lambda.links.adder;
+package com.duoxik.java.aws.lambda.links;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -7,7 +7,7 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.lambda.runtime.Context;
 
-public class LinkGetterHandler {
+public class Getter {
 
     private static final String URL_KEY = "url";
     private static final String ID_KEY = "id";
@@ -19,7 +19,7 @@ public class LinkGetterHandler {
         LINKS_TABLE = dynamoDB.getTable("Links");
     }
 
-    public String getUrlById(final String id, Context context) {
+    public String getLink(final String id, Context context) {
         if (id == null || id.isEmpty()) {
             return null;
         }
